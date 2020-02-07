@@ -128,7 +128,7 @@ namespace DFC.App.FindACourse.Controllers
         {
             this.logger.LogInformation($"{nameof(this.BodyFooter)} has been called");
 
-            return this.NoContent();
+            return View();
         }
 
         [HttpGet]
