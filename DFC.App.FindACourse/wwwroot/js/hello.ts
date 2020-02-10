@@ -2,6 +2,9 @@
     return "Hello, " + person;
 }
 
-let user = "hello world";
+let user = "hello sumair.";
 
-document.body.textContent = greeter(user);
+window.onload = function () {
+    var test = (<HTMLDivElement>document.getElementById('jscontent'));
+    test.innerHTML = user;
+}

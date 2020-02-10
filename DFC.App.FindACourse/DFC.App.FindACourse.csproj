@@ -8,7 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\js\findACourse.ts" />
     <Content Remove="wwwroot\js\hello.ts" />
+    <Content Remove="wwwroot\js\Service\FilterService.ts" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\stylecop.json" Link="../stylecop.json" />

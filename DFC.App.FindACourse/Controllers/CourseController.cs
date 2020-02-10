@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -132,6 +133,30 @@ namespace DFC.App.FindACourse.Controllers
         }
 
         [HttpGet]
+        public async Task<PartialViewResult> RetrieveFilteredCourses(string searchTerm, string distance, int page = 1)
+        {
+            searchTerm = "Maths";
+            var model = new BodyViewModel
+            {
+                CurrentSearchTerm = searchTerm,
+                SideBar = new SideBarViewModel
+                {
+                    TownOrPostcode = "",
+                    DistanceValue = distance,
+                    CourseType = this.ConvertStringToFiltersListViewModel(""),
+                    CourseHours = this.ConvertStringToFiltersListViewModel(""),
+                    CourseStudyTime = this.ConvertStringToFiltersListViewModel(""),
+                    StartDate = this.ConvertStringToFiltersListViewModel(""),
+                },
+                RequestPage = page,
+            };
+
+            var filtered = await this.FilterResults(model).ConfigureAwait(true);
+
+            return PartialView("~/Views/Course/_results.cshtml", filtered);
+        }
+
+        [HttpGet]
         [Route("find-a-course/course/body/course/page")]
         public async Task<IActionResult> Page(string searchTerm, string town, string distance, string courseType, string courseHours, string studyTime, string startDate, int page)
         {
@@ -154,12 +179,13 @@ namespace DFC.App.FindACourse.Controllers
 
             this.logger.LogInformation($"{nameof(this.Page)} generated the model and ready to pass to the view");
 
-            return await this.FilterResults(model).ConfigureAwait(true);
+            var filtered = await this.FilterResults(model).ConfigureAwait(true);
+            return await Results(filtered).ConfigureAwait(true);
         }
 
         [HttpGet]
         [Route("find-a-course/course/body/course/filterresults")]
-        public async Task<IActionResult> FilterResults(BodyViewModel model)
+        public async Task<BodyViewModel> FilterResults(BodyViewModel model)
         {
             this.logger.LogInformation($"{nameof(this.FilterResults)} has been called");
 
@@ -221,7 +247,7 @@ namespace DFC.App.FindACourse.Controllers
 
             this.logger.LogInformation($"{nameof(this.FilterResults)} generated the model and ready to pass to the view");
 
-            return await this.Results(model).ConfigureAwait(true);
+            return model;
         }
 
         [HttpGet]
@@ -259,7 +285,6 @@ namespace DFC.App.FindACourse.Controllers
         }
 
         [HttpGet]
-        [NonAction]
         public async Task<IActionResult> Results(BodyViewModel model)
         {
             this.logger.LogInformation($"{nameof(this.Results)} has been called");
