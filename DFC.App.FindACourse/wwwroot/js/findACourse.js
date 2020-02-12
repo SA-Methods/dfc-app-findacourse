@@ -1,6 +1,6 @@
 var filterService;
 $(document).ready(function () {
-    filterService = new FilterService("course-results", "/find-a-course/course/RetrieveFilteredCourses");
+    filterService = new FilterService("#course-results", "/find-a-course/course/RetrieveFilteredCourses");
     var distanceElement = document.getElementById("DistanceValue");
     $(distanceElement).on("change", function () { return CallAPI(); });
 });

@@ -1,7 +1,7 @@
 ﻿let filterService;
 
 $(document).ready(() => {
-    filterService = new FilterService("course-results","/find-a-course/course/RetrieveFilteredCourses");
+    filterService = new FilterService("#course-results","/find-a-course/course/RetrieveFilteredCourses");
     var distanceElement = (<HTMLSelectElement>document.getElementById("DistanceValue"));
     $(distanceElement).on("change", () => CallAPI());
 });
