@@ -1,6 +1,7 @@
 {
   "version": "1.0",
   "defaultProvider": "cdnjs",
+  "defaultDestination": "wwwroot/js/lib",
   "libraries": [
     {
       "library": "jquery@3.3.1",
