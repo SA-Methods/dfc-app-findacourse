@@ -147,6 +147,12 @@ namespace DFC.App.FindACourse.Controllers
         }
 
         [HttpGet]
+        public async Task<PartialViewResult> RetrieveFilteredCourses(string formData)
+        {
+            return PartialView("~/Views/Course/_results.cshtml");
+        }
+
+        [HttpGet]
         [Route("find-a-course/course/body/course/page")]
         public async Task<IActionResult> Page(string searchTerm, string town, string distance, string courseType, string courseHours, string studyTime, string startDate, int page)
         {
