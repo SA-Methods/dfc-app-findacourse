@@ -21,8 +21,8 @@
                 $(this.outputId).empty();
                 $(this.outputId).html(data);
             },
-            error: function (data) {
-                alert(data);
+            error: function (data, textStatus, jqXHR) {
+                alert(data.error);
             }
         });
     }
