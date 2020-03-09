@@ -1,17 +1,11 @@
-﻿class FilterService {
-    private endPoint: string;
-    private type: string;
-    private outputId: string;
-
-    constructor(endPoint: string, type: string, outputId: string) {
+var FilterService = /** @class */ (function () {
+    function FilterService(endPoint, type, outputId) {
         this.endPoint = endPoint;
         this.type = type;
         this.outputId = outputId;
     }
-
-    FilterData(paramFormData: string) {
-        let formData = paramFormData;
-
+    FilterService.prototype.FilterData = function (paramFormData) {
+        var formData = paramFormData;
         $.ajax({
             type: this.type,
             url: this.endPoint,
@@ -25,5 +19,7 @@
                 alert(data);
             }
         });
-    }
-}
+    };
+    return FilterService;
+}());
+//# sourceMappingURL=FilterService.js.map

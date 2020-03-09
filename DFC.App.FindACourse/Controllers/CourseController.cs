@@ -5,15 +5,18 @@ using DFC.App.FindACourse.Services;
 using DFC.App.FindACourse.ViewModels;
 using DFC.CompositeInterfaceModels.FindACourseClient;
 using GdsCheckboxList.Models;
+using javax.jws;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web.Helpers;
 using Fac = DFC.FindACourseClient;
 
 namespace DFC.App.FindACourse.Controllers
@@ -147,9 +150,11 @@ namespace DFC.App.FindACourse.Controllers
         }
 
         [HttpGet]
-        public async Task<PartialViewResult> RetrieveFilteredCourses(string formData)
+        public async Task<PartialViewResult> RetrieveFilteredCourses(BodyViewModel model)
         {
-            return PartialView("~/Views/Course/_results.cshtml");
+            var filtered = await this.FilterResults(model).ConfigureAwait(true) as ViewResult;
+
+            return PartialView("~/Views/Course/_results.cshtml", filtered.Model);
         }
 
         [HttpGet]

@@ -7,6 +7,11 @@ namespace DFC.App.FindACourse.ViewModels
 {
     public class BodyViewModel
     {
+        public BodyViewModel()
+        {
+            this.SideBar = new SideBarViewModel();
+        }
+
         public string CurrentSearchTerm { get; set; }
 
         public HtmlString Content { get; set; } = new HtmlString("Unknown Find a course content");

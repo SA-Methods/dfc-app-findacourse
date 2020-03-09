@@ -6,6 +6,11 @@
     <CodeAnalysisRuleSet>../../DFC.Digital.CodeAnalysis.ruleset</CodeAnalysisRuleSet>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\js\FindACourse.ts" />
+    <Content Remove="wwwroot\js\services\FilterService.ts" />
+  </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\stylecop.json" Link="../stylecop.json" />
   </ItemGroup>
@@ -13,8 +18,10 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="DFC.FindACourseClient" Version="2.1.21" />
+    <PackageReference Include="IKVM" Version="8.1.5717" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.12.1" />
     <PackageReference Include="Microsoft.AspNet.WebApi.WebHost" Version="5.2.7" />
+    <PackageReference Include="Microsoft.AspNet.WebPages" Version="3.2.7" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -32,6 +39,11 @@
   <ItemGroup>
     <ProjectReference Include="..\DFC.App.FindACourse.Services\DFC.App.FindACourse.Services.csproj" />
     <ProjectReference Include="..\MVCControls\Gds.CheckboxList.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="wwwroot\js\FindACourse.ts" />
+    <TypeScriptCompile Include="wwwroot\js\services\FilterService.ts" />
   </ItemGroup>
 
 </Project>
