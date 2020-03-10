@@ -10,13 +10,13 @@ var FilterService = /** @class */ (function () {
             type: this.type,
             url: this.endPoint,
             data: formData,
-            dataType: 'json',
             success: function (data) {
-                $(this.outputId).empty();
-                $(this.outputId).html(data);
+                $('#course-results').empty();
+                $('#course-results').html(data);
+                console.log(data.Results.ResultProperties.TotalResultCount);
             },
-            error: function (data) {
-                alert(data);
+            error: function (error) {
+                console.log(error);
             }
         });
     };

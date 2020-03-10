@@ -152,7 +152,8 @@ namespace DFC.App.FindACourse.Controllers
         {
             var filtered = await this.FilterResults(model).ConfigureAwait(true) as ViewResult;
 
-            return PartialView("~/Views/Course/_results.cshtml", filtered.Model);
+            var bodyModel = filtered.Model;
+            return PartialView("~/Views/Course/_results.cshtml", bodyModel);
         }
 
         [HttpGet]

@@ -1,4 +1,4 @@
-﻿class FilterService {
+﻿ class FilterService {
     private endPoint: string;
     private type: string;
     private outputId: string;
@@ -16,13 +16,12 @@
             type: this.type,
             url: this.endPoint,
             data: formData,
-            dataType: 'json',
             success: function (data) {
-                $(this.outputId).empty();
-                $(this.outputId).html(data);
+                $('#course-results').empty();
+                $('#course-results').html(data);
             },
-            error: function (data, textStatus, jqXHR) {
-                alert(data.error);
+            error: function (error) {
+                console.log(error);
             }
         });
     }

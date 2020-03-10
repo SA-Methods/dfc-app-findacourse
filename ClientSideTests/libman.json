@@ -1,0 +1,19 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "jasmine@3.5.0",
+      "destination": "lib/jasmine/"
+    },
+    {
+      "library": "typescript@3.8.3",
+      "destination": "lib/typescript/"
+    }
+  ,
+{
+  "library": "jquery@3.4.1",
+  "destination": "lib/jquery/"
+}
+]
+}
