@@ -45,7 +45,7 @@ namespace DFC.App.FindACourse.UI.FunctionalTests
         public void SetApplicationUrl()
         {
             string appBaseUrl = this.Context.GetSettingsLibrary<AppSettings>().AppSettings.AppBaseUrl.ToString();
-            this.Context.GetSettingsLibrary<AppSettings>().AppSettings.AppBaseUrl = new Uri($"{appBaseUrl}contact-us");
+            this.Context.GetSettingsLibrary<AppSettings>().AppSettings.AppBaseUrl = new Uri($"{appBaseUrl}find-a-course");
         }
 
         [BeforeScenario(Order = 3)]
