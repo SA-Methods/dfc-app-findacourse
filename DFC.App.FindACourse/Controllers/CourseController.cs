@@ -117,14 +117,6 @@ namespace DFC.App.FindACourse.Controllers
         [ResponseCache(Duration = 43200)]
         public async Task<IActionResult> Body(string articleName)
         {
-            logService.LogInformation($"{nameof(this.Body)} has been called");
-
-            var model = new BodyViewModel();
-
-            model = new BodyViewModel { Content = new HtmlString("Find a course: Body element") };
-            model.SideBar = GetSideBarViewModel();
-            model.SideBar.OrderByOptions = ListFilters.GetOrderByOptions();
-
             logService.LogInformation($"{nameof(this.Body)} generated the model and ready to pass to the view");
 
             return await SearchCourse(string.Empty).ConfigureAwait(true);
@@ -213,7 +205,7 @@ namespace DFC.App.FindACourse.Controllers
                 logService.LogError($"{nameof(this.FilterResults)} threw an exception" + ex.Message);
             }
 
-            var viewAsString = await this.RenderViewAsync("~/Views/Course/_results.cshtml", model, true).ConfigureAwait(false);
+            var viewAsString = await this.RenderViewAsync("~/Views/Course/_AjaxResults.cshtml", model, true).ConfigureAwait(false);
             return new AjaxModel { HTML = viewAsString, Count = model.Results?.ResultProperties != null ? model.Results.ResultProperties.TotalResultCount : 0, IsPostcode = isPostcode };
         }
 

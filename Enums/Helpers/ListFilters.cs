@@ -70,8 +70,8 @@ namespace DFC.App.FindACourse.Data.Helpers
             var lstOrderBy = new List<SelectListItem>();
 
             lstOrderBy.Add(new SelectListItem("Distance", "Distance"));
-            lstOrderBy.Add(new SelectListItem("Relevance", "Relevance", true));
-            lstOrderBy.Add(new SelectListItem("Start date", "Start date"));
+            lstOrderBy.Add(new SelectListItem("Relevance", "Relevance"));
+            lstOrderBy.Add(new SelectListItem("Start date", "Start date", true));
 
             return lstOrderBy;
         }
