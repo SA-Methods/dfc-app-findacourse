@@ -2,9 +2,11 @@
 using DFC.App.FindACourse.Data.Helpers;
 using DFC.App.FindACourse.Data.Models;
 using DFC.App.FindACourse.Extensions;
+using DFC.App.FindACourse.Models;
 using DFC.App.FindACourse.Services;
 using DFC.App.FindACourse.ViewModels;
 using DFC.CompositeInterfaceModels.FindACourseClient;
+using DFC.Compui.Sessionstate;
 using DFC.Logger.AppInsights.Contracts;
 using GdsCheckboxList.Models;
 using Microsoft.AspNetCore.Html;
@@ -13,6 +15,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Fac = DFC.FindACourseClient;
@@ -23,11 +26,13 @@ namespace DFC.App.FindACourse.Controllers
     {
         private readonly ILogService logService;
         private readonly IFindACourseService findACourseService;
+        private readonly ISessionStateService<SessionDataModel> sessionStateService;
 
-        public CourseController(ILogService logService, IFindACourseService findACourseService)
+        public CourseController(ILogService logService, IFindACourseService findACourseService, ISessionStateService<SessionDataModel> sessionStateService)
         {
             this.logService = logService;
             this.findACourseService = findACourseService;
+            this.sessionStateService = sessionStateService;
         }
 
         [HttpGet]
@@ -119,15 +124,17 @@ namespace DFC.App.FindACourse.Controllers
         {
             logService.LogInformation($"{nameof(this.Body)} has been called");
 
-            var model = new BodyViewModel();
+            var sessionStateModel = await GetSessionStateAsync().ConfigureAwait(false);
 
-            model = new BodyViewModel { Content = new HtmlString("Find a course: Body element") };
-            model.SideBar = GetSideBarViewModel();
-            model.SideBar.OrderByOptions = ListFilters.GetOrderByOptions();
+            //var model = new BodyViewModel();
+
+            //model = new BodyViewModel { Content = new HtmlString("Find a course: Body element") };
+            //model.SideBar = GetSideBarViewModel();
+            //model.SideBar.OrderByOptions = ListFilters.GetOrderByOptions();
 
             logService.LogInformation($"{nameof(this.Body)} generated the model and ready to pass to the view");
 
-            return await SearchCourse(string.Empty).ConfigureAwait(true);
+            return await SearchCourse(sessionStateModel?.State?.ParamValues).ConfigureAwait(true);
         }
 
         [HttpGet]
@@ -179,6 +186,8 @@ namespace DFC.App.FindACourse.Controllers
 
             try
             {
+                await SetSessionStateAsync(paramValues).ConfigureAwait(false);
+
                 model.Results = await findACourseService.GetFilteredData(newBodyViewModel.CourseSearchFilters, newBodyViewModel.CourseSearchOrderBy, model.RequestPage).ConfigureAwait(false);
                 foreach (var item in model.Results.Courses)
                 {
@@ -220,33 +229,35 @@ namespace DFC.App.FindACourse.Controllers
         [HttpGet]
         [Route("find-a-course/course/body/course/page")]
         [Route("find-a-course/search/page/body")]
-        public async Task<IActionResult> Page(string searchTerm, string town, string distance, string courseType, string courseHours, string studyTime, string startDate, int page, bool filterA, bool IsTest, string orderByValue)
+        public async Task<IActionResult> Page(ParamValues paramValues)
         {
             logService.LogInformation($"{nameof(this.Page)} has been called");
 
             var model = new BodyViewModel
             {
-                CurrentSearchTerm = searchTerm,
+                CurrentSearchTerm = paramValues?.SearchTerm,
                 SideBar = new SideBarViewModel
                 {
-                    TownOrPostcode = town,
-                    DistanceValue = distance,
-                    CourseType = ConvertStringToFiltersListViewModel(courseType),
-                    CourseHours = ConvertStringToFiltersListViewModel(courseHours),
-                    CourseStudyTime = ConvertStringToFiltersListViewModel(studyTime),
-                    StartDateValue = startDate,
-                    CurrentSearchTerm = searchTerm,
-                    FiltersApplied = filterA,
-                    SelectedOrderByValue = orderByValue,
+                    TownOrPostcode = paramValues?.Town,
+                    DistanceValue = paramValues?.Distance,
+                    CourseType = ConvertStringToFiltersListViewModel(paramValues?.CourseType),
+                    CourseHours = ConvertStringToFiltersListViewModel(paramValues?.CourseHours),
+                    CourseStudyTime = ConvertStringToFiltersListViewModel(paramValues?.CourseStudyTime),
+                    StartDateValue = paramValues?.StartDate,
+                    CurrentSearchTerm = paramValues?.SearchTerm,
+                    FiltersApplied = paramValues?.FilterA ?? false,
+                    SelectedOrderByValue = paramValues?.OrderByValue,
                 },
-                RequestPage = page,
+                RequestPage = paramValues?.Page ?? 1,
                 IsNewPage = true,
-                IsTest = IsTest,
+                IsTest = paramValues?.IsTest ?? false,
             };
 
             logService.LogInformation($"{nameof(this.Page)} generated the model and ready to pass to the view");
 
             model.FromPaging = true;
+
+            await SetSessionStateAsync(paramValues).ConfigureAwait(false);
 
             return await FilterResults(model).ConfigureAwait(false);
         }
@@ -388,29 +399,48 @@ namespace DFC.App.FindACourse.Controllers
         [Route("find-a-course/course/body/course/searchcourse")]
         [Route("find-a-course/course/body")]
         [Route("find-a-course/search/searchCourse/body")]
-        public async Task<IActionResult> SearchCourse(string searchTerm)
+        public async Task<IActionResult> SearchCourse(ParamValues paramValues)
         {
             logService.LogInformation($"{nameof(this.SearchCourse)} has been called");
 
-            var model = new BodyViewModel();
-            var courseSearchFilters = new CourseSearchFilters
+            var searchTerm = paramValues?.SearchTerm ?? string.Empty;
+            var model = new BodyViewModel
             {
-                CourseType = new List<CourseType> { CourseType.All },
-                CourseHours = new List<CourseHours> { CourseHours.All },
-                StartDate = StartDate.Anytime,
-                CourseStudyTime = new List<Fac.AttendancePattern> { Fac.AttendancePattern.Undefined },
-                SearchTerm = string.IsNullOrEmpty(searchTerm) ? string.Empty : searchTerm,
+                CurrentSearchTerm = searchTerm,
+                SideBar = new SideBarViewModel
+                {
+                    OrderByOptions = ListFilters.GetOrderByOptions(),
+                    TownOrPostcode = paramValues?.Town,
+                    DistanceValue = paramValues?.Distance,
+                    CourseType = ConvertStringToFiltersListViewModel(paramValues?.CourseType),
+                    CourseHours = ConvertStringToFiltersListViewModel(paramValues?.CourseHours),
+                    CourseStudyTime = ConvertStringToFiltersListViewModel(paramValues?.CourseStudyTime),
+                    StartDateValue = paramValues?.StartDate,
+                    CurrentSearchTerm = searchTerm,
+                    FiltersApplied = paramValues?.FilterA ?? false,
+                    SelectedOrderByValue = paramValues?.OrderByValue,
+                },
+                RequestPage = paramValues?.Page ?? 1,
+                IsNewPage = true,
+                IsTest = paramValues?.IsTest ?? false,
+                SelectedDistanceValue = paramValues?.Distance,
             };
 
-            model.SideBar = GetSideBarViewModel();
-            model.SideBar.OrderByOptions = ListFilters.GetOrderByOptions();
-            model.CurrentSearchTerm = searchTerm;
-            model.SideBar.CurrentSearchTerm = searchTerm;
-            model.RequestPage = 1;
+            var newBodyViewModel = GenerateModel(model);
+
+
+            //var courseSearchFilters = new CourseSearchFilters
+            //{
+            //    CourseType = new List<CourseType> { CourseType.All },
+            //    CourseHours = new List<CourseHours> { CourseHours.All },
+            //    StartDate = StartDate.Anytime,
+            //    CourseStudyTime = new List<Fac.AttendancePattern> { Fac.AttendancePattern.Undefined },
+            //    SearchTerm = searchTerm,
+            //};
 
             try
             {
-                model.Results = await findACourseService.GetFilteredData(courseSearchFilters, CourseSearchOrderBy.StartDate, 1).ConfigureAwait(true);
+                model.Results = await findACourseService.GetFilteredData(newBodyViewModel.CourseSearchFilters, newBodyViewModel.CourseSearchOrderBy, model.RequestPage).ConfigureAwait(true);
             }
             catch (Exception ex)
             {
@@ -612,6 +642,43 @@ namespace DFC.App.FindACourse.Controllers
             postcode = postcode.Replace(" ", string.Empty);
 
             return postcode.Insert(postcode.Length - 3, " ");
+        }
+
+        private async Task<SessionStateModel<SessionDataModel>> GetSessionStateAsync()
+        {
+            var compositeSessionId = Request.CompositeSessionId();
+            if (compositeSessionId.HasValue)
+            {
+                logService.LogInformation($"Getting the session state - compositeSessionId = {compositeSessionId}");
+
+                return await sessionStateService.GetAsync(compositeSessionId.Value).ConfigureAwait(false);
+            }
+
+            logService.LogError($"Error getting the session state - compositeSessionId = {compositeSessionId}");
+
+            return default;
+        }
+
+        private async Task<bool> SetSessionStateAsync(ParamValues paramValues)
+        {
+            var compositeSessionId = Request.CompositeSessionId();
+            if (compositeSessionId.HasValue)
+            {
+                logService.LogInformation($"Getting the session state - compositeSessionId = {compositeSessionId}");
+
+                var sessionStateModel = await sessionStateService.GetAsync(compositeSessionId.Value).ConfigureAwait(false);
+                sessionStateModel.State!.ParamValues = paramValues;
+
+                logService.LogInformation($"Saving the session state - compositeSessionId = {compositeSessionId}");
+
+                var result = await sessionStateService.SaveAsync(sessionStateModel).ConfigureAwait(false);
+
+                return result == HttpStatusCode.OK || result == HttpStatusCode.Created;
+            }
+
+            logService.LogError($"Error saving the session state - compositeSessionId = {compositeSessionId}");
+
+            return false;
         }
     }
 }
