@@ -1,25 +1,25 @@
-- name: convert-and-copy-to-azure-blob
-  on: push
-    branches: [ dev ]
+name: convert-and-copy-to-azure-blob
+on: push
     
-  jobs:
-  
-    builds_json:
-      runs-on: ubuntu-latest      
-      steps:
-      
-      - name: convert-to-json
-      - uses: actions/checkout@v1
-        run: Tools/ImportExportTool/Data/csv2json.bash 2022-01-06-CurrentLiveData.csv > output.json
-        shell: bash
-        
-    builds_copy:
-      steps:
-        - name: azure-blob-copy-action
-          uses: ulaval/azure-blob-copy-action@v1
-          with:
-            action: upload
-            connection_string: ${{ secrets.CONNECTION_STRING }}
-            container_name: githubsearch
-            blob_directory: searchfeedjson
-            local_directory: Tools/ImportExportTool/Data/output.json
+jobs:
+
+  #builds_json:
+  builds:
+    runs-on: ubuntu-latest      
+    steps:
+
+    - name: convert-to-json
+    #- uses: actions/checkout@v1
+      run: Tools/ImportExportTool/Data/csv2json.bash 2022-01-06-CurrentLiveData.csv > output.json
+      shell: bash
+
+  #builds_copy:
+  #  steps:
+    - name: azure-blob-copy-action
+      uses: ulaval/azure-blob-copy-action@v1
+      with:
+        action: upload
+        connection_string: ${{ secrets.CONNECTION_STRING }}
+        container_name: githubsearch
+        blob_directory: searchfeedjson
+        local_directory: Tools/ImportExportTool/Data/output.json
