@@ -33,4 +33,4 @@ jobs:
         connection_string: ${{ secrets.CONNECTION_STRING }}
         container_name: searchfeedjson
         blob_directory: ""
-        local_directory: ./Tools/ImportExportTool/Data/output.json
+        local_directory: ./Tools/ImportExportTool/Data
