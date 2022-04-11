@@ -8,8 +8,8 @@ jobs:
     runs-on: ubuntu-latest      
     steps:
 
+    - uses: actions/checkout@v2
     - name: convert-to-json
-    - uses: actions/checkout@v1
       run: Tools/ImportExportTool/Data/csv2json.bash 2022-01-06-CurrentLiveData.csv > output.json
       shell: bash
 
