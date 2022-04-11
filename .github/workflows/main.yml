@@ -12,7 +12,7 @@ jobs:
 
     - uses: "finnp/create-file-action@master"
       env:
-        FILE_NAME: "/Tools/ImportExportTool/Data/output.json"
+        FILE_NAME: "Tools/ImportExportTool/Data/output.json"
         FILE_DATA: ""
 
     - name: convert-to-json
