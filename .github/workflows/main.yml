@@ -9,8 +9,8 @@ jobs:
     steps:
 
     - name: convert-to-json
-    #- uses: actions/checkout@v1
-      run: ./csv2json.bash 2022-01-06-CurrentLiveData.csv > output.json
+    - uses: actions/checkout@v1
+      run: Tools/ImportExportTool/Data/csv2json.bash 2022-01-06-CurrentLiveData.csv > output.json
       shell: bash
 
   #builds_copy:
