@@ -3,7 +3,6 @@ on: push
     
 jobs:
 
-  #builds_json:
   builds:
     runs-on: ubuntu-latest      
     steps:
@@ -21,11 +20,10 @@ jobs:
     - run: chmod +x "./Tools/ImportExportTool/Data/csv2json.bash"
 
     - name: convert-to-json
+      mkdir Output
       run: ./Tools/ImportExportTool/Data/csv2json.bash "./Tools/ImportExportTool/Data/2022-01-06-CurrentLiveData.csv" > "./Tools/ImportExportTool/Data/Output/output.json"
       shell: bash
 
-  #builds_copy:
-  #  steps:
     - name: azure-blob-copy-action
       uses: ulaval/azure-blob-copy-action@v1
       with:
