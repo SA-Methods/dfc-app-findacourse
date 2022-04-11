@@ -31,7 +31,7 @@ http_headers: |
       Cache-Control: public, max-age=604800, immutable
       Content-Type: application/javascript
       Content-Encoding: gzip
-      Content-Language: fr-CA
+      Content-Language: en-GB
       Content-Disposition: inline
 
   - glob: "**/*":
